@@ -5,5 +5,5 @@ ENTRYPOINT ["waf-tuning-tool"]
 RUN \
     apk add --no-cache curl bash
 
-COPY waf-tuning-tool /usr/bin/image-cleanup
+COPY waf-tuning-tool /usr/bin/waf-tuning-tool
 USER 1000:0
