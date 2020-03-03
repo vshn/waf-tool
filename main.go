@@ -2,22 +2,56 @@ package main
 
 import (
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/vshn/waf-tool/cfg"
+	"github.com/vshn/waf-tool/cmd"
 	"os"
-
-	"github.com/elastic/go-elasticsearch/v8"
-	"gopkg.in/src-d/go-git.v4"
+	"strings"
 )
 
+var (
+	// These will be populated/overridden by Goreleaser
+	version = "latest"
+	commit  = "dirty"
+	date    = "today"
+
+	rootCmd = &cobra.Command{
+		Use:     "waf-tool",
+		Version: fmt.Sprintf("%s, commit %s, date %s", version, commit, date),
+	}
+)
+
+func initialize() {
+
+	defaults := cfg.CreateDefaultConfig()
+
+	rootCmd.PersistentFlags().String("log.level", defaults.Log.Level, "Log level")
+	rootCmd.AddCommand(cmd.CreateDemoCommand())
+	flags := rootCmd.PersistentFlags()
+	if err := viper.BindPFlags(flags); err != nil {
+		log.Fatal(err)
+	}
+	if err := flags.Parse(flags.Args()); err != nil {
+		log.Fatal(err)
+	}
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	// Overwrite defaults with new variables from flags as well as ENV variables:
+	err := viper.Unmarshal(&defaults)
+	if err != nil {
+		log.Fatal(err)
+	}
+	cfg.SetupLogging(defaults.Log)
+}
+
 func main() {
-	fmt.Println("Ciao Belli")
-	es, _ := elasticsearch.NewDefaultClient()
-	log.Println(elasticsearch.Version)
-	log.Println(es.Info())
-	fmt.Println("clone")
-	_, err := git.PlainClone("/tmp/foo", false, &git.CloneOptions{
-		URL:      "https://github.com/src-d/go-git",
-		Progress: os.Stdout,
-	})
-	log.Println(err)
+	cobra.OnInitialize(initialize)
+
+	if err := rootCmd.Execute(); err != nil {
+		log.WithError(err).Error("Command error.")
+		os.Exit(1)
+	}
 }
