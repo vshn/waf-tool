@@ -11,7 +11,7 @@ endif::[]
 = WAF Tool
 
 ifdef::status[]
-image:https://img.shields.io/github/workflow/status/vshn/waf-tool/Test/master[Build,link=https://github.com/vshn/waf-tool/actions]
+image:https://img.shields.io/github/workflow/status/vshn/waf-tool/Build/master[Build,link=https://github.com/vshn/waf-tool/actions]
 image:https://img.shields.io/github/v/release/vshn/waf-tool[Releases,link=https://github.com/vshn/waf-tool/releases]
 image:https://img.shields.io/github/license/vshn/waf-tool[License,link=https://github.com/vshn/waf-tool/blob/master/LICENSE]
 image:https://img.shields.io/docker/pulls/vshn/waf-tool[Docker image,link=https://hub.docker.com/r/vshn/waf-tool]
