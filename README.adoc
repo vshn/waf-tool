@@ -8,13 +8,13 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-= WAF Tuning Tool
+= WAF Tool
 
 ifdef::status[]
-image:https://img.shields.io/github/workflow/status/vshn/waf-tuning-tool/Test/master[Build,link=https://github.com/vshn/waf-tuning-tool/actions]
-image:https://img.shields.io/github/v/release/vshn/waf-tuning-tool[Releases,link=https://github.com/vshn/waf-tuning-tool/releases]
-image:https://img.shields.io/github/license/vshn/waf-tuning-tool[License,link=https://github.com/vshn/waf-tuning-tool/blob/master/LICENSE]
-image:https://img.shields.io/docker/pulls/vshn/waf-tuning-tool[Docker image,link=https://hub.docker.com/r/vshn/waf-tuning-tool]
+image:https://img.shields.io/github/workflow/status/vshn/waf-tool/Test/master[Build,link=https://github.com/vshn/waf-tool/actions]
+image:https://img.shields.io/github/v/release/vshn/waf-tool[Releases,link=https://github.com/vshn/waf-tool/releases]
+image:https://img.shields.io/github/license/vshn/waf-tool[License,link=https://github.com/vshn/waf-tool/blob/master/LICENSE]
+image:https://img.shields.io/docker/pulls/vshn/waf-tool[Docker image,link=https://hub.docker.com/r/vshn/waf-tool]
 endif::[]
 
 Helper tool to generate rule exclusions based on ElasticSearch logs queried by uniqueID of the access log

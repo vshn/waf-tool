@@ -25,8 +25,8 @@ snapshot:
 
 dockers:
 - image_templates:
-  - "docker.io/vshn/waf-tuning-tool:v{{ .Version }}"
-  - "docker.io/vshn/waf-tuning-tool:v{{ .Major }}"
+  - "docker.io/vshn/waf-tool:v{{ .Version }}"
+  - "docker.io/vshn/waf-tool:v{{ .Major }}"
 
 changelog:
   sort: asc
@@ -39,4 +39,4 @@ changelog:
 release:
   github:
     owner: vshn
-    name: waf-tuning-tool
+    name: waf-tool

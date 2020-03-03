@@ -1,4 +1,4 @@
-module github.com/vshn/waf-tuning-tool
+module github.com/vshn/waf-tool
 
 go 1.13
 
