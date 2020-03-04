@@ -28,7 +28,6 @@ func initialize() {
 	defaults := cfg.CreateDefaultConfig()
 
 	rootCmd.PersistentFlags().String("log.level", defaults.Log.Level, "Log level")
-	rootCmd.AddCommand(cmd.CreateDemoCommand())
 	flags := rootCmd.PersistentFlags()
 	if err := viper.BindPFlags(flags); err != nil {
 		log.Fatal(err)
@@ -48,6 +47,7 @@ func initialize() {
 }
 
 func main() {
+	rootCmd.AddCommand(cmd.CreateDemoCommand())
 	cobra.OnInitialize(initialize)
 
 	if err := rootCmd.Execute(); err != nil {
