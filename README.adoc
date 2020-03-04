@@ -41,7 +41,7 @@ oc port-forward -n logging svc/logging-es 9200:9200
 +
 [source]
 ----
-curl -XGET "https://logging-es:9200/project.*/_search" -H 'Content-Type: application/json' -d'
+curl -XGET "https://logging-es:9200/project.*/_search" -H 'Content-Type: application/json' -H "Authorization: Bearer $(oc whoami --show-token)" -d'
     {
       "_source": ["modsec-alert"]
       "query": {
@@ -100,5 +100,5 @@ curl -XGET "https://logging-es:9200/project.*/_search" -H 'Content-Type: applica
 [source]
 ----
 1. SecRule REQUEST_URI "@beginsWith /auth/oidc/callback" "phase:2,nolog,pass,ctl:ruleRemoveTargetById=942430;ARGS:code" (most frequently used)
-   1. SecRule REQUEST_URI "@beginsWith /auth/oidc/callback" "phase:2,nolog,pass,ctl:ruleRemoveById=942430"
+1. SecRule REQUEST_URI "@beginsWith /auth/oidc/callback" "phase:2,nolog,pass,ctl:ruleRemoveById=942430"
 ----
