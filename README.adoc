@@ -34,30 +34,32 @@ oc login
 +
 [source]
 ----
-oc port-forward -n logging svc/logging-es 9200:9200
+oc port-forward -n logging svc/logging-es 9200 &
 ----
 
 . Access the logs of elasticsearch and search for the desired modsec-alert uniqueId that was given as the input of the software. All the indexes that begin with project.* have to be searched.
 +
 [source]
 ----
-curl -XGET "https://logging-es:9200/project.*/_search" -H 'Content-Type: application/json' -H "Authorization: Bearer $(oc whoami --show-token)" -d'
-    {
-      "_source": ["modsec-alert"]
+curl -k -XGET "https://localhost:9200/project.*/_search" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $(oc whoami --show-token)" \
+     -d '{
+      "_source": ["modsec-alert"],
       "query": {
         "bool": {
           "must": [
             {
               "match_phrase": {
                 "modsec-alert.uniqueID": {
-                  "query": $uniqueId
+                  "query": "Xibh0U-m3UNWcN42z4ArFQAAAFA"
                 }
               }
             }
           ]
         }
       }
-    }'
+    }' | jq
 ----
 
 . The output would be a json that has to be parsed, recommended by a library. Example output.
