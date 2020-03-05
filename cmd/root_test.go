@@ -1,11 +1,12 @@
 package cmd
 
 import (
+	"os"
+	"testing"
+
 	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
 	"github.com/vshn/waf-tool/cfg"
-	"os"
-	"testing"
 )
 
 func TestGetConfigFromFlags(t *testing.T) {

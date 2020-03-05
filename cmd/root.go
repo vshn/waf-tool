@@ -1,12 +1,14 @@
 package cmd
 
 import (
+	"strings"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"strings"
 )
 
+// GetConfigFromFlags loads config from flags
 func GetConfigFromFlags(flags *pflag.FlagSet, cfg interface{}) {
 	v := viper.New()
 	v.AutomaticEnv()

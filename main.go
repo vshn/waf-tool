@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strings"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vshn/waf-tool/cfg"
 	"github.com/vshn/waf-tool/cmd"
-	"os"
-	"strings"
 )
 
 var (

@@ -1,30 +1,35 @@
 package cfg
 
 import (
-	log "github.com/sirupsen/logrus"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type (
+	// ConfigMap combines all configs
 	ConfigMap struct {
 		Log           LogConfig
 		ElasticSearch ElasticSearchConfig
 	}
+	// LogConfig configures the log level
 	LogConfig struct {
 		Level string
 	}
+	// ElasticSearchConfig configures ES
 	ElasticSearchConfig struct {
-		Url string
+		URL string
 	}
 )
 
+// CreateDefaultConfig creates a default config
 func CreateDefaultConfig() ConfigMap {
 	return ConfigMap{
 		Log: LogConfig{
 			Level: "info",
 		},
 		ElasticSearch: ElasticSearchConfig{
-			Url: "http://localhost:9200/",
+			URL: "https://localhost:9200/",
 		},
 	}
 }
