@@ -1,0 +1,26 @@
+[
+  {
+    "_id": "AW5vQvHKz4TM-Cb94rF5",
+    "_type": "search",
+    "_source": {
+      "title": "ModSecurity Alerts",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "modsec-alert.uniqueID",
+        "modsec-alert.msg",
+        "modsec-alert.uri",
+        "apache-access.requestLine",
+        "modsec-alert.rule_template"
+      ],
+      "sort": [
+        "kubernetes.labels.component",
+        "asc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"project.*\",\"highlightAll\":true,\"version\":true,\"query\":{\"match_all\":{}},\"filter\":[{\"meta\":{\"index\":\"project.*\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"kubernetes.container_name\",\"value\":\"modsecurity-crs\"},\"query\":{\"match\":{\"kubernetes.container_name\":{\"query\":\"modsecurity-crs\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"project.*\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"phrase\",\"key\":\"kubernetes.labels.component\",\"value\":\"waf\"},\"query\":{\"match\":{\"kubernetes.labels.component\":{\"query\":\"waf\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    }
+  }
+]
