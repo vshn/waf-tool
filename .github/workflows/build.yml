@@ -23,7 +23,7 @@ jobs:
         path: /home/runner/go/pkg/mod
         key: go-mod-build
     - name: Run unit tests
-      run: go test ./...
+      run: go test --cover ./...
     - uses: goreleaser/goreleaser-action@v1
       with:
         args: release --snapshot
