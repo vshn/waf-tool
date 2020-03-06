@@ -2,13 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/vshn/waf-tool/cfg"
 	"github.com/vshn/waf-tool/cmd"
 )
 
@@ -17,42 +12,18 @@ var (
 	version = "latest"
 	commit  = "dirty"
 	date    = "today"
-
-	rootCmd = &cobra.Command{
-		Use:     "waf-tool",
-		Version: fmt.Sprintf("%s, commit %s, date %s", version, commit, date),
-	}
 )
 
-func initialize() {
-
-	defaults := cfg.CreateDefaultConfig()
-
-	rootCmd.PersistentFlags().String("log.level", defaults.Log.Level, "Log level")
-	flags := rootCmd.PersistentFlags()
-	if err := viper.BindPFlags(flags); err != nil {
-		log.Fatal(err)
-	}
-	if err := flags.Parse(flags.Args()); err != nil {
-		log.Fatal(err)
-	}
-	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-
-	// Overwrite defaults with new variables from flags as well as ENV variables:
-	err := viper.Unmarshal(&defaults)
-	if err != nil {
-		log.Fatal(err)
-	}
-	cfg.SetupLogging(defaults.Log)
-}
-
 func main() {
-	rootCmd.AddCommand(cmd.CreateDemoCommand())
-	cobra.OnInitialize(initialize)
+	log.SetLevel(log.InfoLevel)
+	log.SetFormatter(&log.TextFormatter{
+		FullTimestamp:          true,
+		DisableLevelTruncation: true,
+		ForceColors:            true,
+	})
 
-	if err := rootCmd.Execute(); err != nil {
-		log.WithError(err).Error("Command error.")
-		os.Exit(1)
+	cmd.SetVersion(fmt.Sprintf("%s, commit %s, date %s", version, commit, date))
+	if err := cmd.Execute(); err != nil {
+		log.WithError(err).Fatal()
 	}
 }
