@@ -1,27 +1,21 @@
 package cmd
 
 import (
-	"crypto/tls"
-	"net/http"
-	"os/exec"
-	"strings"
-	"syscall"
-	"time"
-
-	"github.com/elastic/go-elasticsearch/v5"
-	"github.com/elastic/go-elasticsearch/v5/esapi"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/vshn/waf-tool/pkg/tune"
 )
 
 var (
 	tuneCmd = &cobra.Command{
-		Use:   "tune",
+		Use:   "tune [unique-id]",
 		Short: "Create ModSecurity rule exclusions for a given request unique ID",
 		Long: `The tool will use the oc binary to start a port forward to the cluster's Elasticsearch.
 Using the $KUBECONFIG token it will query ES for the given unique ID.`,
-		RunE: runTuneCommand,
+		Args:      cobra.ExactArgs(1),
+		ValidArgs: []string{"unique-id"},
+		RunE:      runTuneCommand,
 	}
 )
 
@@ -38,54 +32,5 @@ func init() {
 
 // RunTuneCommand runs the tune command
 func runTuneCommand(cmd *cobra.Command, args []string) error {
-	es, err := elasticsearch.NewClient(elasticsearch.Config{
-		Addresses: []string{config.ElasticSearch.URL},
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: config.ElasticSearch.InsecureSkipVerify,
-			},
-		},
-	})
-	if err != nil {
-		return err
-	}
-
-	out, err := exec.Command("oc", "whoami", "--show-token").Output()
-	if err != nil {
-		return err
-	}
-	port := "9200"
-	portForward := exec.Command("oc", "port-forward", "-n", "logging", "svc/logging-es", port)
-	defer func() {
-		if err := portForward.Process.Signal(syscall.SIGTERM); err != nil {
-			log.WithError(err).Error()
-		}
-		portForward.Wait()
-	}()
-	log.WithField("port", port).Info("Starting port forward...")
-	err = portForward.Start()
-	if err != nil {
-		return err
-	}
-
-	time.Sleep(1 * time.Second)
-
-	log.WithFields(log.Fields{
-		"client_version": elasticsearch.Version,
-		"url":            config.ElasticSearch.URL,
-	}).Debug("Connecting to Elasticsearch...")
-
-	res, err := es.Info(func(req *esapi.InfoRequest) {
-		if req.Header == nil {
-			req.Header = http.Header{}
-		}
-		token := strings.TrimSpace(string(out))
-		req.Header.Add("Authorization", "Bearer "+token)
-	})
-	if err != nil {
-		return err
-	}
-	log.Info(res)
-
-	return nil
+	return tune.Tune(args[0], config)
 }
