@@ -6,7 +6,7 @@
       "title": "ModSecurity",
       "hits": 0,
       "description": "",
-      "panelsJSON": "[{\"col\":1,\"id\":\"AW5vLn37mt2Th4z87sBf\",\"panelIndex\":2,\"row\":1,\"size_x\":12,\"size_y\":5,\"type\":\"visualization\"},{\"size_x\":12,\"size_y\":3,\"panelIndex\":3,\"type\":\"search\",\"id\":\"AW5vQvHKz4TM-Cb94rF5\",\"col\":1,\"row\":6,\"columns\":[\"modsec-alert.msg\",\"modsec-alert.uri\",\"apache-access.requestLine\"],\"sort\":[\"kubernetes.labels.component\",\"asc\"]}]",
+      "panelsJSON": "[{\"col\":1,\"id\":\"AW5vLn37mt2Th4z87sBf\",\"panelIndex\":2,\"row\":1,\"size_x\":12,\"size_y\":5,\"type\":\"visualization\"},{\"size_x\":12,\"size_y\":3,\"panelIndex\":3,\"type\":\"search\",\"id\":\"AW5vQvHKz4TM-Cb94rF5\",\"col\":1,\"row\":6,\"columns\":[\"apache-access.uniqueID\",\"apache-access.modsecAnomalyScoreIn\",\"apache-access.requestLine\"],\"sort\":[\"kubernetes.labels.component\",\"asc\"]}]",
       "optionsJSON": "{\"darkTheme\":false}",
       "uiStateJSON": "{}",
       "version": 1,
