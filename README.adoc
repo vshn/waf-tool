@@ -17,90 +17,45 @@ image:https://img.shields.io/github/license/vshn/waf-tool[License,link=https://g
 image:https://img.shields.io/docker/pulls/vshn/waf-tool[Docker image,link=https://hub.docker.com/r/vshn/waf-tool]
 endif::[]
 
-Helper tool to generate rule exclusions based on ElasticSearch logs queried by uniqueID of the access log
+Helper tool to generate ModSecurity rule exclusions.
 
 == Usage
 
-The first version of the tool would have to operate as follows:
+To generate rule exclusions for all alerts of a request:
 
-. Authenticate in OpenShift via a service account using either a token or acc/pwd credentials
+. Authenticate to the OpenShift cluster
 +
 [source]
-----
 oc login
-----
 
-. Since there are no routes to access the Elasticsearch directly a port forwarding is necessary. Create a port forwarding from the local client to the service of Elasticsearch in the Openshift cluster. Elasticsearch is listening on port 9200.
+. Find a request with false positives to tune. For example by using this Kibana link:dashboards/kibana[dashboard].
+
+. Run the `waf-tool` tuning command with the request's unique ID:
 +
 [source]
-----
-oc port-forward -n logging svc/logging-es 9200 &
-----
+waf-tool tune -k <unique-id>
 
-. Access the logs of elasticsearch and search for the desired modsec-alert uniqueId that was given as the input of the software. All the indexes that begin with project.* have to be searched.
+. Use the generated exclusion rules and adapt them as required.
+
+=== Elasticsearch TLS Connection
+
+Elasticsearch runs by default with a TLS certificate signed by a custom CA. You need to get the CA certificate in order to trust it. Either provide it in the `WAF_ES_CUSTOM_CA` env variable or with the `----es-custom-ca` flag.
+
+To ignore the certificate and don't verify it (possibly insecure), run the `tune` command with the `-k` flag.
+
+See `waf-tool tune --help` for more information.
+
+== Development
+
+. Install Go version 1.13
+
+. Run tests:
 +
 [source]
-----
-curl -k -XGET "https://localhost:9200/project.*/_search" \
-     -H 'Content-Type: application/json' \
-     -H "Authorization: Bearer $(oc whoami --show-token)" \
-     -d '{
-      "_source": ["modsec-alert"],
-      "query": {
-        "bool": {
-          "must": [
-            {
-              "match_phrase": {
-                "modsec-alert.uniqueID": {
-                  "query": "Xibh0U-m3UNWcN42z4ArFQAAAFA"
-                }
-              }
-            }
-          ]
-        }
-      }
-    }' | jq
-----
+go test -cover ./...
 
-. The output would be a json that has to be parsed, recommended by a library. Example output.
+
+. Run tool
 +
 [source]
-----
-"modsec-alert": {
-  "msg": "Restricted SQL Character Anomaly Detection (args): # of special characters exceeded (12)",
-  "severity": "WARNING",
-  "ver": "OWASP_CRS/3.1.0",
-  "rule_template": "# ModSec Rule Exclusion: 942430 : Restricted SQL Character Anomaly Detection (args): # of special characters exceeded
-  (12) (severity:  WARNING)",
-  "data": "Matched Data: -0620-41bb-8c2f-d024922c173e.6404161c-05af-498f-a222-eceece5bf4ab.0ce081c4-3353-4b18-a764- found within ARGS:code: c3946ac9-0620-41bb-8c2f-d024922c173e.6404161c-05af-498f-a222-eceece5bf4ab.0ce081c4-3353-4b18-a764-8a95631a6e9c",
-  "line": 1235,
-  "description": """ModSecurity: Warning. Pattern match "((?:[~!@#\\$%\\^&\\*\\(\\)\\-\\+=\\{\\}\\[\\]\\|:;\"'\xc2\xb4\xe2\x80\x99\xe2\x80\x98`<>][^~!@#\\$%\\^&\\*\\(\\)\\-\\+=\\{\\}\\[\\]\\|:;\"'\xc2\xb4\xe2\x80\x99\xe2\x80\x98`<>]*?){12})" at ARGS:code.""",
-  "uri": "/oauth2-redirect.html",
-  "tags": [
-    "application-multi",
-    "language-multi",
-    "platform-multi",
-    "attack-sqli",
-    "OWASP_CRS/WEB_ATTACK/SQL_INJECTION",
-    "WASCTC/WASC-19",
-    "OWASP_TOP_10/A1",
-    "OWASP_AppSensor/CIE1",
-    "PCI/6.5.2",
-    "paranoia-level/2"
-  ],
-  "hostname": "localhost",
-  "file": "/etc/apache2/modsecurity.d/owasp-crs/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf",
-  "client": "85.195.222.81",
-  "id": 942430,
-  "uniqueID": "Xibh0U-m3UNWcN42z4ArFQAAAFA"
-}
-----
-
-. Parse the relevant information from the modsec-alert object like id and ARGS variable from description.
-. Generate several exclusion rules for the end user to choose from, examples:
-+
-[source]
-----
-1. SecRule REQUEST_URI "@beginsWith /auth/oidc/callback" "phase:2,nolog,pass,ctl:ruleRemoveTargetById=942430;ARGS:code" (most frequently used)
-1. SecRule REQUEST_URI "@beginsWith /auth/oidc/callback" "phase:2,nolog,pass,ctl:ruleRemoveById=942430"
-----
+go run main.go
