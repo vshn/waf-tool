@@ -16,6 +16,14 @@ func TestRootConfig(t *testing.T) {
 	assert.True(t, config.Log.Verbose)
 }
 
+func TestRootHelp(t *testing.T) {
+	buf := new(bytes.Buffer)
+	rootCmd.SetOut(buf)
+	rootCmd.SetArgs([]string{""})
+	Execute()
+	assert.Contains(t, buf.String(), "Usage:")
+}
+
 func TestVersionCmd(t *testing.T) {
 	buf := new(bytes.Buffer)
 	rootCmd.SetOut(buf)

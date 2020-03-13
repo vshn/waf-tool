@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"os"
 	"testing"
 
@@ -26,4 +27,12 @@ func TestTuneConfigFrom(t *testing.T) {
 	assert.Equal(t, customCA, config.ElasticSearch.CustomCA)
 	assert.True(t, config.ElasticSearch.InsecureSkipVerify)
 	assert.Equal(t, caFile, config.ElasticSearch.CustomCAFile)
+}
+
+func TestTuneHelp(t *testing.T) {
+	buf := new(bytes.Buffer)
+	rootCmd.SetOut(buf)
+	rootCmd.SetArgs([]string{"tune", "-h"})
+	Execute()
+	assert.Contains(t, buf.String(), "waf-tool tune [unique-id] [flags]")
 }

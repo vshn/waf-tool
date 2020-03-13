@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/vshn/waf-tool/cmd"
@@ -21,9 +22,11 @@ func main() {
 		DisableLevelTruncation: true,
 		ForceColors:            true,
 	})
+	// We log everything to stderr so we can use stdout for the rules
+	log.SetOutput(os.Stderr)
 
 	cmd.SetVersion(fmt.Sprintf("%s, commit %s, date %s", version, commit, date))
 	if err := cmd.Execute(); err != nil {
-		log.WithError(err).Fatal()
+		log.WithError(err).Fatal("An error occured")
 	}
 }

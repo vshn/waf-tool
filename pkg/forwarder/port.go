@@ -1,4 +1,4 @@
-package forward
+package forwarder
 
 import (
 	"bufio"
@@ -17,8 +17,8 @@ type PortForwarder struct {
 	port string
 }
 
-// NewPortForwarder creates a new port forwarder
-func NewPortForwarder(port string) PortForwarder {
+// New creates a new port forwarder
+func New(port string) PortForwarder {
 	return PortForwarder{
 		port: port,
 	}
