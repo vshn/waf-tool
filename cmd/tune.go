@@ -4,7 +4,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vshn/waf-tool/pkg/tune"
+	"github.com/vshn/waf-tool/pkg/tuner"
 )
 
 var (
@@ -32,5 +32,5 @@ func init() {
 
 // RunTuneCommand runs the tune command
 func runTuneCommand(cmd *cobra.Command, args []string) error {
-	return tune.Tune(args[0], config)
+	return tuner.Tune(args[0], config)
 }
