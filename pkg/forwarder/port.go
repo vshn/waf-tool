@@ -64,7 +64,7 @@ func (p *PortForwarder) Start() error {
 
 	log.WithField("port", p.port).Info("Starting port forward...")
 	if err := p.cmd.Start(); err != nil {
-		return fmt.Errorf("Could not start port forwarding: %w", err)
+		return fmt.Errorf("could not start port forwarding: %w", err)
 	}
 
 	if err := <-errorChan; err != nil {

@@ -18,12 +18,12 @@ import (
 func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
 	out, err := exec.Command("oc", "whoami", "--show-token").Output()
 	if err != nil {
-		return fmt.Errorf("Could not get token: %w", err)
+		return fmt.Errorf("could not get token: %w", err)
 	}
 	token := strings.TrimSpace(string(out))
 	es, err := elasticsearch.New(config.ElasticSearch, token)
 	if err != nil {
-		return fmt.Errorf("Could not create ES client: %w", err)
+		return fmt.Errorf("could not create ES client: %w", err)
 	}
 
 	url, err := url.Parse(config.ElasticSearch.URL)
@@ -67,7 +67,7 @@ func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
 	for _, result := range result.Hits.Hits {
 		if result.Source.ApacheAccess != nil {
 			if access != nil {
-				return fmt.Errorf("Found multiple access logs for same unique id: %s", uniqueID)
+				return fmt.Errorf("found multiple access logs for same unique id: %s", uniqueID)
 			}
 			log.WithField("access", result.Source.ApacheAccess).Debug("Found apache access log")
 			access = result.Source.ApacheAccess
@@ -78,7 +78,7 @@ func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
 		}
 	}
 	if access == nil {
-		return fmt.Errorf("Could not find any access log for unique id: %s", uniqueID)
+		return fmt.Errorf("could not find any access log for unique id: %s", uniqueID)
 	}
 	if len(alerts) == 0 {
 		log.WithField("unique-id", uniqueID).Warnf("Could not find any ModSecurity alerts for request")

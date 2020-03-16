@@ -37,7 +37,7 @@ func New(config cfg.ElasticSearchConfig, token string) (Client, error) {
 	if len(config.CustomCAFile) > 0 {
 		caCert, err := ioutil.ReadFile(config.CustomCAFile)
 		if err != nil {
-			return nil, fmt.Errorf("Could not read file with CA cert: %w", err)
+			return nil, fmt.Errorf("could not read file with CA cert: %w", err)
 		}
 		if err := addRootCA(caCert, transport.TLSClientConfig); err != nil {
 			return nil, err
@@ -67,7 +67,7 @@ func addRootCA(customCA []byte, tlsConfig *tls.Config) error {
 		tlsConfig.RootCAs = x509.NewCertPool()
 	}
 	if ok := tlsConfig.RootCAs.AppendCertsFromPEM(customCA); !ok {
-		return fmt.Errorf("Could not read CA cert: %s", customCA)
+		return fmt.Errorf("could not read CA cert: %s", customCA)
 	}
 	return nil
 }

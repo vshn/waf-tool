@@ -29,7 +29,7 @@ func (c client) SearchUniqueID(uniqueID string) (model.SearchResult, error) {
 		},
 	}
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		return model.SearchResult{}, fmt.Errorf("Error encoding query %w", err)
+		return model.SearchResult{}, fmt.Errorf("error encoding query %w", err)
 	}
 
 	res, err := c.es.Search(

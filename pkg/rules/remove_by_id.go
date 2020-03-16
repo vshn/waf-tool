@@ -18,7 +18,7 @@ const (
 // If no parameters are found, the whole rule will be removed.
 func CreateByIDExclusion(alerts []model.ModsecAlert, ruleBaseID int) (string, error) {
 	if len(alerts) == 0 {
-		return "", errors.New("No ModSecurity alerts")
+		return "", errors.New("no ModSecurity alerts")
 	}
 	pathMap := map[string][]model.ModsecAlert{}
 	// Combine alerts by path
