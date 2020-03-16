@@ -14,14 +14,15 @@ import (
 func (c client) SearchUniqueID(uniqueID string) (model.SearchResult, error) {
 
 	var buf bytes.Buffer
-	query := map[string]interface{}{
-		"query": map[string]interface{}{
-			"bool": map[string]interface{}{
-				"should": []map[string]interface{}{{
-					"match": map[string]interface{}{
+	type m map[string]interface{}
+	query := m{
+		"query": m{
+			"bool": m{
+				"should": []m{{
+					"match": m{
 						"apache-access.uniqueID": uniqueID,
 					}}, {
-					"match": map[string]interface{}{
+					"match": m{
 						"modsec-alert.uniqueID": uniqueID,
 					}},
 				},
