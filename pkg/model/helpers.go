@@ -9,7 +9,7 @@ var (
 )
 
 // ExtractParameter extracts the paramter of an alert, if any
-func (alert ModsecAlert) ExtractParameter() (string, bool) {
+func (alert *ModsecAlert) ExtractParameter() (string, bool) {
 	if params := alertParameter.FindStringSubmatch(alert.Description); params != nil {
 		if len(params) == 3 {
 			return params[2], true
