@@ -39,7 +39,7 @@ waf-tool tune -k <unique-id>
 
 === Elasticsearch TLS Connection
 
-Elasticsearch runs by default with a TLS certificate signed by a custom CA. You need to get the CA certificate in order to trust it. Either provide it in the `WAF_ES_CUSTOM_CA` env variable or with the `----es-custom-ca` flag.
+Elasticsearch runs by default with a TLS certificate signed by a custom CA. You need to get the CA certificate in order to trust it. Either provide it in the `WAF_ES_CUSTOM_CA` env variable or with the `--es-custom-ca` flag.
 
 To ignore the certificate and don't verify it (possibly insecure), run the `tune` command with the `-k` flag.
 

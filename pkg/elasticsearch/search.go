@@ -11,7 +11,7 @@ import (
 )
 
 // SearchUniqueID to search for a ModSecurity unique ID
-func (c client) SearchUniqueID(uniqueID string) (model.SearchResult, error) {
+func (c *client) SearchUniqueID(uniqueID string) (model.SearchResult, error) {
 
 	var buf bytes.Buffer
 	type m map[string]interface{}
@@ -46,10 +46,10 @@ func (c client) SearchUniqueID(uniqueID string) (model.SearchResult, error) {
 	if res.IsError() {
 		var e model.ErrorResponse
 		if res.StatusCode == http.StatusUnauthorized {
-			return model.SearchResult{}, errors.New("error unauthorized")
+			return model.SearchResult{}, errors.New("401 unauthorized")
 		}
 		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			return model.SearchResult{}, fmt.Errorf("error parsing the response body %w", err)
+			return model.SearchResult{}, fmt.Errorf("failure at parsing the response body: %w", err)
 		}
 		return model.SearchResult{}, fmt.Errorf("[%s] %s: %s",
 			res.Status(),

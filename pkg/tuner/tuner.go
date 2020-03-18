@@ -14,6 +14,8 @@ import (
 	"github.com/vshn/waf-tool/pkg/rules"
 )
 
+const baseID = 10100
+
 // Tune creates exclusion rules for a given uniqe ID
 func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
 	out, err := exec.Command("oc", "whoami", "--show-token").Output()
@@ -61,7 +63,6 @@ func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
 		return nil
 	}
 
-	baseID := 10100
 	var alerts []model.ModsecAlert
 	var access *model.ApacheAccess
 	for _, result := range result.Hits.Hits {
