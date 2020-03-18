@@ -18,23 +18,10 @@ const baseID = 10100
 
 // Tune creates exclusion rules for a given uniqe ID
 func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
-	out, err := exec.Command("oc", "whoami", "--show-token").Output()
-	if err != nil {
-		return fmt.Errorf("could not get token: %w", err)
-	}
-	token := strings.TrimSpace(string(out))
-	es, err := elasticsearch.New(config.ElasticSearch, token)
-	if err != nil {
-		return fmt.Errorf("could not create ES client: %w", err)
-	}
-
-	url, err := url.Parse(config.ElasticSearch.URL)
+	es, fwd, err := prepareEsClient(config)
 	if err != nil {
 		return err
 	}
-
-	fwd := forwarder.New(url.Port())
-
 	defer func() {
 		if err := fwd.Stop(); err != nil {
 			if returnError == nil {
@@ -45,13 +32,6 @@ func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
 			}
 		}
 	}()
-	if err := fwd.Start(); err != nil {
-		return err
-	}
-
-	log.WithFields(log.Fields{
-		"url": config.ElasticSearch.URL,
-	}).Debug("Connecting to Elasticsearch...")
 
 	result, err := es.SearchUniqueID(uniqueID)
 	if err != nil {
@@ -92,4 +72,28 @@ func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
 	fmt.Print(rule)
 
 	return nil
+}
+
+func prepareEsClient(config cfg.Configuration) (elasticsearch.Client, forwarder.PortForwarder, error) {
+	out, err := exec.Command("oc", "whoami", "--show-token").Output()
+	if err != nil {
+		return nil, nil, fmt.Errorf("could not get token: %w", err)
+	}
+	token := strings.TrimSpace(string(out))
+	es, err := elasticsearch.New(config.ElasticSearch, token)
+	if err != nil {
+		return nil, nil, fmt.Errorf("could not create ES client: %w", err)
+	}
+
+	url, err := url.Parse(config.ElasticSearch.URL)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fwd := forwarder.New(url.Port())
+
+	if err := fwd.Start(); err != nil {
+		return nil, nil, err
+	}
+	return es, fwd, nil
 }

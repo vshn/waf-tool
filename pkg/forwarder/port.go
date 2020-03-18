@@ -11,26 +11,33 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const loggingNamespace = "openshift-logging"
+
 // PortForwarder can forward a port to Elasticsearch
-type PortForwarder struct {
+type PortForwarder interface {
+	Start() error
+	Stop() error
+}
+
+type portForwarder struct {
 	cmd  *exec.Cmd
 	port string
 }
 
 // New creates a new port forwarder
 func New(port string) PortForwarder {
-	return PortForwarder{
+	return &portForwarder{
 		port: port,
 	}
 }
 
 // Start starts a port forwarding
-func (p *PortForwarder) Start() error {
+func (p *portForwarder) Start() error {
 
 	if p.cmd != nil {
 		return errors.New("this port forwarder is already in use")
 	}
-	p.cmd = exec.Command("oc", "port-forward", "--namespace", "logging", "svc/logging-es", p.port)
+	p.cmd = exec.Command("oc", "port-forward", "--namespace", loggingNamespace, "svc/logging-es", p.port)
 	stdout, err := p.cmd.StdoutPipe()
 	if err != nil {
 		return err
@@ -75,7 +82,7 @@ func (p *PortForwarder) Start() error {
 }
 
 // Stop the forwarding
-func (p *PortForwarder) Stop() error {
+func (p *portForwarder) Stop() error {
 	if err := p.cmd.Process.Signal(os.Interrupt); err != nil {
 		return err
 	}
