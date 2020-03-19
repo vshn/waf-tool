@@ -39,10 +39,10 @@ func (c *client) SearchUniqueID(uniqueID string) (model.SearchResult, error) {
 		c.es.Search.WithIgnoreUnavailable(true),
 		c.es.Search.WithBody(&buf),
 	)
-	defer res.Body.Close()
 	if err != nil {
 		return model.SearchResult{}, err
 	}
+	defer res.Body.Close()
 	if res.IsError() {
 		var e model.ErrorResponse
 		if res.StatusCode == http.StatusUnauthorized {
