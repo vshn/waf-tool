@@ -1,44 +1,33 @@
 package cfg
 
-import (
-	log "github.com/sirupsen/logrus"
-	"os"
-)
-
 type (
-	ConfigMap struct {
-		Log           LogConfig
-		ElasticSearch ElasticSearchConfig
+	// Configuration combines all configs
+	Configuration struct {
+		Log           LogConfig           `mapstructure:",squash"`
+		ElasticSearch ElasticSearchConfig `mapstructure:",squash"`
 	}
+	// LogConfig configures the log level
 	LogConfig struct {
-		Level string
+		Verbose bool
 	}
+	// ElasticSearchConfig configures ES
 	ElasticSearchConfig struct {
-		Url string
+		URL                string `mapstructure:"es-url"`
+		InsecureSkipVerify bool   `mapstructure:"es-insecure-skip-tls-verify"`
+		CustomCA           string `mapstructure:"es-custom-ca"`
+		CustomCAFile       string `mapstructure:"es-custom-ca-file"`
 	}
 )
 
-func CreateDefaultConfig() ConfigMap {
-	return ConfigMap{
+// NewDefaultConfig creates a default configuration
+func NewDefaultConfig() Configuration {
+	return Configuration{
 		Log: LogConfig{
-			Level: "info",
+			Verbose: false,
 		},
 		ElasticSearch: ElasticSearchConfig{
-			Url: "http://localhost:9200/",
+			URL:                "https://localhost:9200/",
+			InsecureSkipVerify: false,
 		},
-	}
-}
-
-// SetupLogging initializes logging framework
-func SetupLogging(cfg LogConfig) {
-
-	log.SetOutput(os.Stdout)
-	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
-	level, err := log.ParseLevel(cfg.Level)
-	if err != nil {
-		log.WithError(err).Warn("Using info level.")
-		log.SetLevel(log.InfoLevel)
-	} else {
-		log.SetLevel(level)
 	}
 }
