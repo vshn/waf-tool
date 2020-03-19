@@ -10,8 +10,14 @@ builds:
   - CGO_ENABLED=0 # this is needed otherwise the Docker image build is faulty
   goarch:
   - amd64
+  - arm
+  - arm64
+  - 386
   goos:
   - linux
+  - darwin
+  goarm:
+  - 7
 
 archives:
 - format: binary
@@ -40,3 +46,4 @@ release:
   github:
     owner: vshn
     name: waf-tool
+  prerelease: auto
