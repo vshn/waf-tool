@@ -14,7 +14,10 @@ import (
 	"github.com/vshn/waf-tool/pkg/rules"
 )
 
-const baseID = 10100
+const (
+	baseID   = 10100
+	ocBinary = "oc"
+)
 
 // Tune creates exclusion rules for a given uniqe ID
 func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
@@ -75,7 +78,7 @@ func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
 }
 
 func prepareEsClient(config cfg.Configuration) (elasticsearch.Client, forwarder.PortForwarder, error) {
-	out, err := exec.Command("oc", "whoami", "--show-token").Output()
+	out, err := exec.Command(ocBinary, "whoami", "--show-token").Output()
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not get token: %w", err)
 	}
