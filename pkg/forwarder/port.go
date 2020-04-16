@@ -11,7 +11,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const loggingNamespace = "openshift-logging"
+const (
+	loggingNamespace     = "openshift-logging"
+	elasticSearchService = "svc/logging-es"
+	kubectlBinary        = "kubectl"
+)
 
 // PortForwarder can forward a port to Elasticsearch
 type PortForwarder interface {
@@ -37,7 +41,7 @@ func (p *portForwarder) Start() error {
 	if p.cmd != nil {
 		return errors.New("this port forwarder is already in use")
 	}
-	p.cmd = exec.Command("oc", "port-forward", "--namespace", loggingNamespace, "svc/logging-es", p.port)
+	p.cmd = exec.Command(kubectlBinary, "port-forward", "--namespace", loggingNamespace, elasticSearchService, p.port)
 	stdout, err := p.cmd.StdoutPipe()
 	if err != nil {
 		return err

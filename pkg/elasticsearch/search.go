@@ -17,15 +17,10 @@ func (c *client) SearchUniqueID(uniqueID string) (model.SearchResult, error) {
 	type m map[string]interface{}
 	query := m{
 		"query": m{
-			"bool": m{
-				"should": []m{{
-					"match": m{
-						"apache-access.uniqueID": uniqueID,
-					}}, {
-					"match": m{
-						"modsec-alert.uniqueID": uniqueID,
-					}},
-				},
+			"multi_match": m{
+				"query":    uniqueID,
+				"fields":   []string{"apache-access.uniqueID", "modsec-alert.uniqueID"},
+				"operator": "and",
 			},
 		},
 	}
@@ -39,10 +34,10 @@ func (c *client) SearchUniqueID(uniqueID string) (model.SearchResult, error) {
 		c.es.Search.WithIgnoreUnavailable(true),
 		c.es.Search.WithBody(&buf),
 	)
-	defer res.Body.Close()
 	if err != nil {
 		return model.SearchResult{}, err
 	}
+	defer res.Body.Close()
 	if res.IsError() {
 		var e model.ErrorResponse
 		if res.StatusCode == http.StatusUnauthorized {
