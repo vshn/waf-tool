@@ -17,11 +17,11 @@ image:https://img.shields.io/github/license/vshn/waf-tool[License,link=https://g
 image:https://img.shields.io/docker/pulls/vshn/waf-tool[Docker image,link=https://hub.docker.com/r/vshn/waf-tool]
 endif::[]
 
-Helper tool to generate ModSecurity rule exclusions.
+Helper tool to generate ModSecurity rule exclusions and create merge request to Gitlab repositories.
 
 == Usage
 
-To generate rule exclusions for all alerts of a request:
+To generate rule exclusions for all alerts of a request and create a merge request:
 
 . Authenticate to the OpenShift cluster
 +
@@ -30,12 +30,12 @@ oc login
 
 . Find a request with false positives to tune. For example by using this Kibana link:dashboards/kibana[dashboard].
 
-. Run the `waf-tool` tuning command with the request's unique ID:
+. Run the `waf-tool` tuning command with a repository, token and the request's unique ID:
 +
 [source]
-waf-tool tune -k <unique-id>
+waf-tool tune -k -m -r <local-path/https-url> -t <gitlab-token> <unique-id>
 
-. Use the generated exclusion rules and adapt them as required.
+. Use the generated exclusion rules and adapt them as required in your the merge request.
 
 === Elasticsearch TLS Connection
 
@@ -44,6 +44,9 @@ Elasticsearch runs by default with a TLS certificate signed by a custom CA. You 
 To ignore the certificate and don't verify it (possibly insecure), run the `tune` command with the `-k` flag.
 
 See `waf-tool tune --help` for more information.
+
+=== Gitlab Merge Request
+Currently the software supports cloned filesystem repository and https URL. Repositories cloned via ssh is not supported yet.
 
 == Development
 

@@ -8,6 +8,8 @@ var (
 	alertParameter = regexp.MustCompile(`^ModSecurity: Warning. Pattern match.+ (at|against) "?([^T][^X].+)"?\.$`)
 )
 
+type RuleIdFunc func(id int) (string, error)
+
 // ExtractParameter extracts the paramter of an alert, if any
 func (alert *ModsecAlert) ExtractParameter() (string, bool) {
 	if params := alertParameter.FindStringSubmatch(alert.Description); params != nil {

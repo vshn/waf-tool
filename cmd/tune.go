@@ -25,6 +25,9 @@ func init() {
 	tuneCmd.Flags().BoolP("es-insecure-skip-tls-verify", "k", config.ElasticSearch.InsecureSkipVerify, "If true, the server's certificate will not be checked for validity. This will make your HTTPS connections insecure")
 	tuneCmd.Flags().String("es-custom-ca", config.ElasticSearch.CustomCA, "Custom CA certificate to trust (in PEM format)")
 	tuneCmd.Flags().String("es-custom-ca-file", config.ElasticSearch.CustomCAFile, "Path to custom CA certificate to trust (in PEM format)")
+	tuneCmd.Flags().StringP("repository", "r", config.GitLab.Repository, "Repository Local file system path or a URL")
+	tuneCmd.Flags().StringP("gitlab-token", "t", config.GitLab.Token, "GitLab access token")
+	tuneCmd.Flags().BoolP("create-merge-request", "m", config.GitLab.MergeRequest, "Create a merge request on GitLab")
 	if err := viper.BindPFlags(tuneCmd.Flags()); err != nil {
 		log.WithError(err).Fatal()
 	}

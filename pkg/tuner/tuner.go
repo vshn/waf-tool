@@ -2,6 +2,8 @@ package tuner
 
 import (
 	"fmt"
+	"github.com/vshn/waf-tool/pkg/file"
+	"github.com/vshn/waf-tool/pkg/rules"
 	"net/url"
 	"os/exec"
 	"strings"
@@ -10,18 +12,23 @@ import (
 	"github.com/vshn/waf-tool/cfg"
 	"github.com/vshn/waf-tool/pkg/elasticsearch"
 	"github.com/vshn/waf-tool/pkg/forwarder"
+	"github.com/vshn/waf-tool/pkg/git"
 	"github.com/vshn/waf-tool/pkg/model"
-	"github.com/vshn/waf-tool/pkg/rules"
 )
 
 const (
 	baseID   = 10100
 	ocBinary = "oc"
 )
+const (
+	ruleFilePath      = "deployment/base/rules/before-crs/rules.conf"
+	ref               = "refs/heads/"
+	featureBranchName = "update-waf-rules"
+)
 
 // Tune creates exclusion rules for a given uniqe ID
-func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
-	es, fwd, err := prepareEsClient(config)
+func Tune(uniqueID string, configuration cfg.Configuration) (returnError error) {
+	es, fwd, err := prepareEsClient(configuration)
 	if err != nil {
 		return err
 	}
@@ -68,12 +75,63 @@ func Tune(uniqueID string, config cfg.Configuration) (returnError error) {
 		log.WithField("unique-id", uniqueID).Warnf("Could not find any ModSecurity alerts for request")
 		return nil
 	}
-	rule, err := rules.CreateByIDExclusion(alerts, baseID)
+	ruleFunc := func(id int) (string, error) { return rules.CreateByIDExclusion(alerts, id) }
+	if configuration.GitLab.MergeRequest {
+		log.WithField("unique-id", uniqueID).Info("Prepare creating new merge request")
+		err = manageGit(configuration, ruleFunc)
+		if err != nil {
+			return err
+		}
+	} else {
+		fmt.Print(ruleFunc(baseID))
+	}
+	return nil
+}
+
+func manageGit(configuration cfg.Configuration, ruleFunc model.RuleIdFunc) error {
+	log.WithField("repository", configuration.GitLab.Repository).Info("Set GitLab repository")
+	repository, err := git.GetRepository(&configuration)
 	if err != nil {
 		return err
 	}
-	fmt.Print(rule)
+	worktree, err := repository.Worktree()
+	if err != nil {
+		return fmt.Errorf("could not get worktree: %w", err)
+	}
+	head, err := repository.Head()
+	if err != nil {
+		return fmt.Errorf("could not get head reference from repository: %w", err)
+	}
 
+	workingBranch := git.WorkingBranch{
+		Worktree:   worktree,
+		Head:       head,
+		BranchName: ref + featureBranchName,
+		RuleFile:   file.RuleFile{Path: ruleFilePath},
+	}
+	log.WithField("branch", featureBranchName).Info("Manage new branch")
+	err = workingBranch.Create()
+	if err != nil {
+		return err
+	}
+	err = workingBranch.Update(ruleFunc)
+	if err != nil {
+		return err
+	}
+	commit, err := workingBranch.Save()
+	if err != nil {
+		return err
+	}
+	log.WithField("branch", featureBranchName).Info("Save new branch")
+	err = git.SaveRepository(repository, commit, configuration.GitLab.Token)
+	if err != nil {
+		return err
+	}
+	log.Info("Create merge request")
+	err = git.CreateMergeRequest(&configuration, featureBranchName)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
