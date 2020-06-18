@@ -5,6 +5,7 @@ type (
 	Configuration struct {
 		Log           LogConfig           `mapstructure:",squash"`
 		ElasticSearch ElasticSearchConfig `mapstructure:",squash"`
+		GitLab        GitLabConfig        `mapstructure:",squash"`
 	}
 	// LogConfig configures the log level
 	LogConfig struct {
@@ -17,6 +18,13 @@ type (
 		CustomCA           string `mapstructure:"es-custom-ca"`
 		CustomCAFile       string `mapstructure:"es-custom-ca-file"`
 	}
+
+	// GitLabConfig configures GitLab
+	GitLabConfig struct {
+		Repository   string `mapstructure:"repository"`
+		MergeRequest bool   `mapstructure:"create-merge-request"`
+		Token        string `mapstructure:"gitlab-token"`
+	}
 )
 
 // NewDefaultConfig creates a default configuration
@@ -28,6 +36,10 @@ func NewDefaultConfig() Configuration {
 		ElasticSearch: ElasticSearchConfig{
 			URL:                "https://localhost:9200/",
 			InsecureSkipVerify: false,
+		},
+		GitLab: GitLabConfig{
+			Repository:   "./",
+			MergeRequest: false,
 		},
 	}
 }

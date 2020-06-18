@@ -13,6 +13,9 @@ func TestTuneConfigFrom(t *testing.T) {
 	url := "https://some-example.net/"
 	os.Setenv("WAF_ES_URL", url)
 
+	token := "token"
+	os.Setenv("WAF_GITLAB_TOKEN", token)
+
 	customCA := "PEMPEM"
 	os.Setenv("WAF_ES_CUSTOM_CA", customCA)
 
@@ -27,6 +30,7 @@ func TestTuneConfigFrom(t *testing.T) {
 	assert.Equal(t, customCA, config.ElasticSearch.CustomCA)
 	assert.True(t, config.ElasticSearch.InsecureSkipVerify)
 	assert.Equal(t, caFile, config.ElasticSearch.CustomCAFile)
+	assert.Equal(t, token, config.GitLab.Token)
 }
 
 func TestTuneHelp(t *testing.T) {
