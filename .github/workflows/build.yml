@@ -17,6 +17,6 @@ jobs:
       with:
         path: /home/runner/go/pkg/mod
         key: go-mod-build
-    - uses: goreleaser/goreleaser-action@v1
+    - uses: goreleaser/goreleaser-action@v2
       with:
         args: release --snapshot
