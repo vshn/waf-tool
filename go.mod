@@ -10,5 +10,5 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.6.3
 	github.com/stretchr/testify v1.6.1
-	github.com/xanzy/go-gitlab v0.34.2
+	github.com/xanzy/go-gitlab v0.43.0
 )
